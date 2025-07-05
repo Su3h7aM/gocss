@@ -27,6 +27,8 @@ func main() {
 		"font-bold":   true,
 		"w-full":      true,
 		"h-screen":    true,
+		"hover:text-green-500": true,
+		"sm:p-16": true,
 	}
 
 	css, err := generator.Generate(tokens)

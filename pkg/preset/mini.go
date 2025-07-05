@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/su3h7am/gocss/pkg/core"
 )
@@ -12,6 +13,7 @@ import (
 func NewMini() core.Preset {
 	return func(config *core.ResolvedConfig) {
 		config.Rules = append(config.Rules, getMiniRules()...)
+		config.Variants = append(config.Variants, getMiniVariants()...)
 	}
 }
 
@@ -136,6 +138,35 @@ func getMiniRules() []core.Rule {
 				}
 			},
 			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+	}
+}
+
+func getMiniVariants() []core.Variant {
+	return []core.Variant{
+		{
+			Matcher: func(token string, ctx *core.VariantContext) *core.VariantMatch {
+				if strings.HasPrefix(token, "hover:") {
+					return &core.VariantMatch{Matcher: "hover:"}
+				}
+				return nil
+			},
+			Handler: func(entry *core.CSSEntry, match *core.VariantMatch) *core.CSSEntry {
+				entry.Selector = entry.Selector + ":hover"
+				return entry
+			},
+		},
+		{
+			Matcher: func(token string, ctx *core.VariantContext) *core.VariantMatch {
+				if strings.HasPrefix(token, "sm:") {
+					return &core.VariantMatch{Matcher: "sm:"}
+				}
+				return nil
+			},
+			Handler: func(entry *core.CSSEntry, match *core.VariantMatch) *core.CSSEntry {
+				entry.Parent = "@media (min-width: 640px)"
+				return entry
+			},
 		},
 	}
 }

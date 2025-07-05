@@ -63,11 +63,20 @@ type StringifiedUtil struct {
 	Selector string
 	Entries  map[string]string
 	Layer    string
+	Parent   string // For media queries, e.g., "@media (min-width: 640px)"
 }
 type Shortcut struct{}
 type Preflight struct{}
 type Extractor interface{}
 type Postprocessor interface{}
 type VariantContext struct{}
-type VariantMatch struct{}
-type VariantHandler struct{}
+
+type VariantMatch struct {
+	Matcher string
+	// Add other fields as needed for variant context, e.g., value for `sm:`
+}
+
+type VariantHandler struct {
+	Variant *Variant
+	Match   *VariantMatch
+}
