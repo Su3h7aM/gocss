@@ -14,11 +14,23 @@ func NewMini() core.Preset {
 	return func(config *core.ResolvedConfig) {
 		config.Rules = append(config.Rules, getMiniRules()...)
 		config.Variants = append(config.Variants, getMiniVariants()...)
+		config.Shortcuts = append(config.Shortcuts, getMiniShortcuts()...)
 	}
 }
 
 func getMiniRules() []core.Rule {
 	return []core.Rule{
+		// Base rule for testing layers
+		{
+			Static: "html",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"box-sizing": "border-box"},
+					Selector:   "html",
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "base"},
+		},
 		// Margin
 		{
 			Matcher: regexp.MustCompile(`^m-(\d+)$`),
@@ -39,6 +51,26 @@ func getMiniRules() []core.Rule {
 				return &core.CSSEntry{
 					Properties: map[string]string{"padding": fmt.Sprintf("%dpx", val*4)},
 					Selector:   fmt.Sprintf(".%s", ctx.RawSelector),
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+		{
+			Static: "py-2",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"padding-top": "0.5rem", "padding-bottom": "0.5rem"},
+					Selector:   ".py-2",
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+		{
+			Static: "px-4",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"padding-left": "1rem", "padding-right": "1rem"},
+					Selector:   ".px-4",
 				}
 			},
 			Meta: &core.RuleMeta{Layer: "utilities"},
@@ -73,6 +105,16 @@ func getMiniRules() []core.Rule {
 					}
 				}
 				return nil
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+		{
+			Static: "text-white",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"color": "#fff"},
+					Selector:   ".text-white",
+				}
 			},
 			Meta: &core.RuleMeta{Layer: "utilities"},
 		},
@@ -139,6 +181,17 @@ func getMiniRules() []core.Rule {
 			},
 			Meta: &core.RuleMeta{Layer: "utilities"},
 		},
+		// Border Radius
+		{
+			Static: "rounded",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"border-radius": "0.25rem"},
+					Selector:   ".rounded",
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
 	}
 }
 
@@ -166,6 +219,24 @@ func getMiniVariants() []core.Variant {
 			Handler: func(entry *core.CSSEntry, match *core.VariantMatch) *core.CSSEntry {
 				entry.Parent = "@media (min-width: 640px)"
 				return entry
+			},
+		},
+	}
+}
+
+func getMiniShortcuts() []core.Shortcut {
+	return []core.Shortcut{
+		{
+			Static: "btn",
+			Expand: func(match []string) []string {
+				return []string{"py-2", "px-4", "bg-blue-500", "text-white", "font-bold", "rounded"}
+			},
+		},
+		{
+			Pattern: regexp.MustCompile(`^btn-(red|blue|green)$`),
+			Expand: func(match []string) []string {
+				color := match[1]
+				return []string{fmt.Sprintf("bg-%s-500", color), "text-white", "font-bold", "rounded"}
 			},
 		},
 	}

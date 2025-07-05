@@ -13,7 +13,7 @@ type ResolvedConfig struct {
 	Theme         map[string]interface{}
 	Rules         []Rule
 	Variants      []Variant
-	Shortcuts     map[string]Shortcut // Usar um mapa para acesso rápido a atalhos estáticos
+	Shortcuts     []Shortcut
 	Preflights    []Preflight
 	Extractors    []Extractor
 	Layers        map[string]int
@@ -65,7 +65,11 @@ type StringifiedUtil struct {
 	Layer    string
 	Parent   string // For media queries, e.g., "@media (min-width: 640px)"
 }
-type Shortcut struct{}
+type Shortcut struct {
+	Pattern *regexp.Regexp
+	Static  string
+	Expand  func(match []string) []string
+}
 type Preflight struct{}
 type Extractor interface{}
 type Postprocessor interface{}

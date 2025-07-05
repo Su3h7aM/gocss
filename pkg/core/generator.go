@@ -18,7 +18,10 @@ func (g *UnoGenerator) Generate(tokens map[string]bool) (string, error) {
 		}
 		for _, util := range stringifiedUtils {
 			// TODO: Obter a camada (layer) do util
-			layer := "default"
+			layer := util.Layer
+			if layer == "" {
+				layer = "default" // Fallback to default if not specified
+			}
 			layerCSS[layer] = append(layerCSS[layer], util)
 		}
 	}
@@ -128,6 +131,22 @@ func (g *UnoGenerator) matchVariants(token string) (string, []*VariantHandler) {
 	return current, handlers
 }
 
+func (g *UnoGenerator) expandShortcut(token string) (bool, []string, error) {
+	for _, s := range g.Config.Shortcuts {
+		if s.Static != "" {
+			if s.Static == token {
+				return true, s.Expand([]string{token}), nil
+			}
+		} else if s.Pattern != nil {
+			matches := s.Pattern.FindStringSubmatch(token)
+			if len(matches) > 0 {
+				return true, s.Expand(matches), nil
+			}
+		}
+	}
+	return false, nil, nil
+}
+
 // ParseToken é o coração do pipeline de resolução.
 func (g *UnoGenerator) ParseToken(token string) ([]*StringifiedUtil, error) {
 	// a. Verificar cache
@@ -137,6 +156,42 @@ func (g *UnoGenerator) ParseToken(token string) ([]*StringifiedUtil, error) {
 
 	// c. Corresponder Variantes
 	remainingToken, variantHandlers := g.matchVariants(token)
+
+	// d. Expandir Atalhos (recursivamente)
+	isShortcut, expandedTokens, err := g.expandShortcut(remainingToken)
+	if err != nil {
+		return nil, err
+	}
+	if isShortcut {
+		var result []*StringifiedUtil
+		for _, expandedToken := range expandedTokens {
+			// Recursively parse expanded tokens
+			parsed, err := g.ParseToken(expandedToken)
+			if err != nil {
+				return nil, err
+			}
+			// Apply variant handlers to recursively parsed tokens
+			for _, util := range parsed {
+				// Create a new CSSEntry from the recursively parsed util
+				entryToApplyVariants := &CSSEntry{
+					Selector: util.Selector,
+					Properties: util.Entries,
+					Layer: util.Layer,
+					Parent: util.Parent,
+				}
+				// Apply variant handlers from the original token
+				finalEntry := g.applyVariants(entryToApplyVariants, variantHandlers)
+				result = append(result, &StringifiedUtil{
+					Selector: finalEntry.Selector,
+					Entries:  finalEntry.Properties,
+					Layer:    util.Layer, // Layer should come from the original rule of the expanded token
+					Parent:   finalEntry.Parent,
+				})
+			}
+		}
+		g.Cache[token] = result
+		return result, nil
+	}
 
 	// e. Corresponder Regras
 	rule, match := g.matchRule(remainingToken)
@@ -161,7 +216,7 @@ func (g *UnoGenerator) ParseToken(token string) ([]*StringifiedUtil, error) {
 	util := &StringifiedUtil{
 		Selector: finalEntry.Selector,
 		Entries:  finalEntry.Properties,
-		Layer:    rule.Meta.Layer,
+		Layer:    rule.Meta.Layer, // Layer should come from the original rule
 		Parent:   finalEntry.Parent,
 	}
 	g.Cache[token] = []*StringifiedUtil{util}
@@ -175,8 +230,29 @@ func (g *UnoGenerator) sortLayers(layers map[string][]*StringifiedUtil) []string
 	for k := range layers {
 		keys = append(keys, k)
 	}
-	
-	// Sort alphabetically for now
-		sort.Strings(keys)
+
+	// Sort based on configured layer order
+		sort.Slice(keys, func(i, j int) bool {
+			layerA := keys[i]
+			layerB := keys[j]
+
+			orderA, okA := g.Config.Layers[layerA]
+			orderB, okB := g.Config.Layers[layerB]
+
+			// If both layers are defined in config, sort by their order
+			if okA && okB {
+				return orderA < orderB
+			}
+			// If only A is defined, A comes first
+			if okA {
+				return true
+			}
+			// If only B is defined, B comes first
+			if okB {
+				return false
+			}
+			// If neither is defined, sort alphabetically
+			return layerA < layerB
+		})
 	return keys
 }

@@ -20,7 +20,7 @@ func NewResolvedConfig(cfg *Config) *ResolvedConfig {
 		Theme:         make(map[string]interface{}),
 		Rules:         []Rule{},
 		Variants:      []Variant{},
-		Shortcuts:     make(map[string]Shortcut),
+		Shortcuts:     []Shortcut{},
 		Preflights:    []Preflight{},
 		Extractors:    []Extractor{},
 		Layers:        make(map[string]int),

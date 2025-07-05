@@ -12,6 +12,11 @@ func main() {
 		Presets: []core.Preset{
 			preset.NewMini(),
 		},
+		Layers: map[string]int{
+			"base":       0,
+			"components": 1,
+			"utilities":  2,
+		},
 	}
 
 	resolvedConfig := core.NewResolvedConfig(cfg)
@@ -29,6 +34,9 @@ func main() {
 		"h-screen":    true,
 		"hover:text-green-500": true,
 		"sm:p-16": true,
+		"btn": true,
+		"btn-red": true,
+		"html": true,
 	}
 
 	css, err := generator.Generate(tokens)
