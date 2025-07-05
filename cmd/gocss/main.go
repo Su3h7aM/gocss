@@ -23,7 +23,7 @@ func main() {
 	// Configure GOCSS
 	cfg := &core.Config{
 		Presets: []core.Preset{
-			preset.NewMini(),
+			preset.NewWind(),
 		},
 		Layers: map[string]int{
 			"base":       0,
@@ -42,7 +42,9 @@ func main() {
 	// Build function
 	build := func() {
 		fmt.Println("Building CSS...")
-		filesToProcess := make(map[string]string)
+		filesToProcess := map[string]string{
+		"test.html": `<div class="m-4 p-8 block text-red-500 bg-blue-500 text-lg font-bold w-full h-screen hover:text-green-500 sm:p-16 btn btn-red flex items-center justify-center grid grid-cols-2 gap-4"></div><span class="text-white rounded"></span>`,
+	}
 
 		// Find files matching glob patterns
 		matches, err := filepath.Glob(*inputPatterns)

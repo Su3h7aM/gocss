@@ -4,6 +4,53 @@
       padding: 64px;
     }
   }
+    .py-2 {
+      padding-bottom: 0.5rem;
+      padding-top: 0.5rem;
+    }
+    .px-4 {
+      padding-right: 1rem;
+      padding-left: 1rem;
+    }
+    .bg-blue-500 {
+      background-color: #3b82f6;
+    }
+    .text-white {
+      color: #fff;
+    }
+    .font-bold {
+      font-weight: 700;
+    }
+    .rounded {
+      border-radius: 0.25rem;
+    }
+    .m-4 {
+      margin: 16px;
+    }
+    .text-white {
+      color: #fff;
+    }
+    .rounded {
+      border-radius: 0.25rem;
+    }
+    .block {
+      display: block;
+    }
+    .bg-blue-500 {
+      background-color: #3b82f6;
+    }
+    .h-screen {
+      height: 100vh;
+    }
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .p-8 {
+      padding: 32px;
+    }
+    .hover:text-green-500:hover {
+      color: #22c55e;
+    }
     .bg-red-500 {
       background-color: #ef4444;
     }
@@ -16,61 +63,32 @@
     .rounded {
       border-radius: 0.25rem;
     }
-    .rounded {
-      border-radius: 0.25rem;
-    }
     .text-red-500 {
       color: #ef4444;
+    }
+    .font-bold {
+      font-weight: 700;
+    }
+    .flex {
+      display: flex;
+    }
+    .items-center {
+      align-items: center;
+    }
+    .justify-center {
+      justify-content: center;
+    }
+    .grid {
+      display: grid;
+    }
+    .gap-4 {
+      gap: 16px;
     }
     .text-lg {
       font-size: 1.125rem;
       line-height: 1.75rem;
     }
-    .h-screen {
-      height: 100vh;
-    }
-    .m-4 {
-      margin: 16px;
-    }
-    .p-8 {
-      padding: 32px;
-    }
-    .block {
-      display: block;
-    }
-    .bg-blue-500 {
-      background-color: #3b82f6;
-    }
     .w-full {
       width: 100%;
-    }
-    .hover:text-green-500:hover {
-      color: #22c55e;
-    }
-    .text-white {
-      color: #fff;
-    }
-    .font-bold {
-      font-weight: 700;
-    }
-    .py-2 {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-    }
-    .px-4 {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-    .bg-blue-500 {
-      background-color: #3b82f6;
-    }
-    .text-white {
-      color: #fff;
-    }
-    .font-bold {
-      font-weight: 700;
-    }
-    .rounded {
-      border-radius: 0.25rem;
     }
 }

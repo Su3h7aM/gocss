@@ -9,16 +9,16 @@ import (
 	"github.com/su3h7am/gocss/pkg/core"
 )
 
-// NewMini retorna um preset com regras básicas, similar ao preset-mini.
-func NewMini() core.Preset {
+// NewWind retorna um preset com regras básicas, similar ao preset-wind.
+func NewWind() core.Preset {
 	return func(config *core.ResolvedConfig) {
-		config.Rules = append(config.Rules, getMiniRules()...)
-		config.Variants = append(config.Variants, getMiniVariants()...)
-		config.Shortcuts = append(config.Shortcuts, getMiniShortcuts()...)
+		config.Rules = append(config.Rules, getWindRules()...)
+		config.Variants = append(config.Variants, getWindVariants()...)
+		config.Shortcuts = append(config.Shortcuts, getWindShortcuts()...)
 	}
 }
 
-func getMiniRules() []core.Rule {
+func getWindRules() []core.Rule {
 	return []core.Rule{
 		// Base rule for testing layers
 		{
@@ -192,10 +192,75 @@ func getMiniRules() []core.Rule {
 			},
 			Meta: &core.RuleMeta{Layer: "utilities"},
 		},
+		// Flexbox
+		{
+			Static: "flex",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"display": "flex"},
+					Selector:   ".flex",
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+		{
+			Static: "items-center",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"align-items": "center"},
+					Selector:   ".items-center",
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+		{
+			Static: "justify-center",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"justify-content": "center"},
+					Selector:   ".justify-center",
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+		// Grid
+		{
+			Static: "grid",
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				return &core.CSSEntry{
+					Properties: map[string]string{"display": "grid"},
+					Selector:   ".grid",
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+		{
+			Matcher: regexp.MustCompile(`^grid-cols-(\d+)$`),
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				cols := match[1]
+				return &core.CSSEntry{
+					Properties: map[string]string{"grid-template-columns": fmt.Sprintf("repeat(%s, minmax(0, 1fr))", cols)},
+					Selector:   fmt.Sprintf(".%s", ctx.RawSelector),
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
+		// Spacing
+		{
+			Matcher: regexp.MustCompile(`^gap-(\d+)$`),
+			Handler: func(match []string, ctx *core.RuleContext) *core.CSSEntry {
+				val, _ := strconv.Atoi(match[1])
+				return &core.CSSEntry{
+					Properties: map[string]string{"gap": fmt.Sprintf("%dpx", val*4)},
+					Selector:   fmt.Sprintf(".%s", ctx.RawSelector),
+				}
+			},
+			Meta: &core.RuleMeta{Layer: "utilities"},
+		},
 	}
 }
 
-func getMiniVariants() []core.Variant {
+func getWindVariants() []core.Variant {
 	return []core.Variant{
 		{
 			Matcher: func(token string, ctx *core.VariantContext) *core.VariantMatch {
@@ -224,7 +289,7 @@ func getMiniVariants() []core.Variant {
 	}
 }
 
-func getMiniShortcuts() []core.Shortcut {
+func getWindShortcuts() []core.Shortcut {
 	return []core.Shortcut{
 		{
 			Static: "btn",
