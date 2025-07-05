@@ -1,0 +1,68 @@
+package core
+
+import "regexp"
+
+// UnoGenerator é a estrutura principal que orquestra todo o processo.
+type UnoGenerator struct {
+	Config *ResolvedConfig
+	Cache  map[string][]*StringifiedUtil // Cache para tokens processados
+}
+
+// ResolvedConfig armazena a configuração final mesclada de presets e do usuário.
+type ResolvedConfig struct {
+	Theme         map[string]interface{}
+	Rules         []Rule
+	Variants      []Variant
+	Shortcuts     map[string]Shortcut // Usar um mapa para acesso rápido a atalhos estáticos
+	Preflights    []Preflight
+	Extractors    []Extractor
+	Layers        map[string]int
+	Postprocess   []Postprocessor
+}
+
+// Rule define como transformar um token em CSS.
+type Rule struct {
+	Matcher *regexp.Regexp // Para regras dinâmicas
+	Static  string         // Para regras estáticas
+	Handler func(match []string, ctx *RuleContext) *CSSEntry
+	Meta    *RuleMeta
+}
+
+// RuleMeta contém metadados para uma regra.
+type RuleMeta struct {
+	Layer    string
+	Internal bool
+}
+
+// Variant define como manipular prefixos como `hover:` ou `md:`.
+type Variant struct {
+	Matcher  func(token string, ctx *VariantContext) *VariantMatch
+	Handler  func(entry *CSSEntry, match *VariantMatch) *CSSEntry
+	MultiPass bool // Se a variante pode ser aplicada múltiplas vezes
+}
+
+// CSSEntry representa uma unidade de CSS gerada.
+type CSSEntry struct {
+	Properties map[string]string
+	Selector   string
+	Parent     string // Para media queries, etc.
+	Layer      string
+}
+
+// RuleContext fornece contexto para os handlers de regras.
+type RuleContext struct {
+	RawSelector     string
+	CurrentSelector string
+	Theme           map[string]interface{}
+	VariantHandlers []*VariantHandler // Handlers acumulados
+}
+
+// Outras structs a serem definidas
+type StringifiedUtil struct{}
+type Shortcut struct{}
+type Preflight struct{}
+type Extractor interface{}
+type Postprocessor interface{}
+type VariantContext struct{}
+type VariantMatch struct{}
+type VariantHandler struct{}
