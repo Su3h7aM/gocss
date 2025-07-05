@@ -7,17 +7,26 @@ import (
 )
 
 // Generate processa um conjunto de tokens e retorna o CSS final.
-func (g *UnoGenerator) Generate(tokens map[string]bool) (string, error) {
+func (g *UnoGenerator) Generate(files map[string]string) (string, error) {
 	layerCSS := make(map[string][]*StringifiedUtil)
+	
+	// Extract tokens from files
+		extractedTokens := make(map[string]bool)
+	for path, content := range files {
+		for _, ext := range g.Config.Extractors {
+			for _, token := range ext.Extract(content, path) {
+				extractedTokens[token] = true
+			}
+		}
+	}
 
-	for token := range tokens {
+	for token := range extractedTokens {
 		stringifiedUtils, err := g.ParseToken(token)
 		if err != nil {
 			// TODO: Lidar com o erro, talvez registrar e continuar
 			continue
 		}
 		for _, util := range stringifiedUtils {
-			// TODO: Obter a camada (layer) do util
 			layer := util.Layer
 			if layer == "" {
 				layer = "default" // Fallback to default if not specified

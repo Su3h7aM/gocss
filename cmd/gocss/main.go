@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/su3h7am/gocss/pkg/core"
+	"github.com/su3h7am/gocss/pkg/extractor"
 	"github.com/su3h7am/gocss/pkg/preset"
 )
 
@@ -17,29 +18,21 @@ func main() {
 			"components": 1,
 			"utilities":  2,
 		},
+		Extractors: []core.Extractor{
+			&extractor.ExtractorSplit{},
+			&extractor.TemplExtractor{},
+		},
 	}
 
 	resolvedConfig := core.NewResolvedConfig(cfg)
 	generator := core.NewGenerator(resolvedConfig)
 
-	tokens := map[string]bool{
-		"m-4":         true,
-		"p-8":         true,
-		"block":       true,
-		"text-red-500":  true,
-		"bg-blue-500":   true,
-		"text-lg":     true,
-		"font-bold":   true,
-		"w-full":      true,
-		"h-screen":    true,
-		"hover:text-green-500": true,
-		"sm:p-16": true,
-		"btn": true,
-		"btn-red": true,
-		"html": true,
+	files := map[string]string{
+		"test.html": `<div class="m-4 p-8 block text-red-500 bg-blue-500 text-lg font-bold w-full h-screen hover:text-green-500 sm:p-16 btn btn-red"></div>`,
+		"test2.html": `<span class="text-white rounded"></span>`,
 	}
 
-	css, err := generator.Generate(tokens)
+	css, err := generator.Generate(files)
 	if err != nil {
 		fmt.Println("Erro:", err)
 		return

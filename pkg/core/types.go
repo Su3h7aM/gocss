@@ -71,7 +71,9 @@ type Shortcut struct {
 	Expand  func(match []string) []string
 }
 type Preflight struct{}
-type Extractor interface{}
+type Extractor interface {
+	Extract(code string, path string) []string
+}
 type Postprocessor interface{}
 type VariantContext struct{}
 
