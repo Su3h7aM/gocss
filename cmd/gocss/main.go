@@ -18,9 +18,15 @@ func main() {
 	generator := core.NewGenerator(resolvedConfig)
 
 	tokens := map[string]bool{
-		"m-4":   true,
-		"p-8":   true,
-		"block": true,
+		"m-4":         true,
+		"p-8":         true,
+		"block":       true,
+		"text-red-500":  true,
+		"bg-blue-500":   true,
+		"text-lg":     true,
+		"font-bold":   true,
+		"w-full":      true,
+		"h-screen":    true,
 	}
 
 	css, err := generator.Generate(tokens)
