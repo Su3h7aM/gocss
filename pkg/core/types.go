@@ -58,7 +58,12 @@ type RuleContext struct {
 }
 
 // Outras structs a serem definidas
-type StringifiedUtil struct{}
+// StringifiedUtil representa uma regra de CSS processada e pronta para ser escrita.
+type StringifiedUtil struct {
+	Selector string
+	Entries  map[string]string
+	Layer    string
+}
 type Shortcut struct{}
 type Preflight struct{}
 type Extractor interface{}
