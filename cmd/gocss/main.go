@@ -8,12 +8,14 @@ import (
 )
 
 func main() {
-	config := &core.ResolvedConfig{}
+	cfg := &core.Config{
+		Presets: []core.Preset{
+			preset.NewMini(),
+		},
+	}
 
-	// Aplicar o preset mini
-	preset.NewMini()(config)
-
-	generator := core.NewGenerator(config)
+	resolvedConfig := core.NewResolvedConfig(cfg)
+	generator := core.NewGenerator(resolvedConfig)
 
 	tokens := map[string]bool{
 		"m-4":   true,
